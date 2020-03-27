@@ -13,7 +13,7 @@ app.config['JSON_AS_ASCII'] = False
 db = sqlite3.connect('sudact.sqlite', check_same_thread=False)
 
 
-def get_law_data(db_id: int):
+def get_law_data(db_id):
     sql = '''select id, name, url from uk_sections
     where level=3 and id=?'''
 
@@ -77,7 +77,7 @@ def list_regions():
 
 @app.route('/documents/', methods=['GET'])
 def get_documents():
-    sql = '''select {selector}
+    sql = f'''select {selector}
     from documents d
     join metadata m on m.document_id=d.id
     where substr(m.date, 1, 4) like :year
@@ -87,9 +87,13 @@ def get_documents():
     order by d.id
     '''
 
+
+
     selector = ''' d.id id, d.header header, d.url url, m.date date, m.number number, m.court court, m.region region,
     m.judge judge, m.article article, m.accused accused
     '''
+
+    print(selector)
 
     page_size = int(request.args.get('page_size', 20))
     page_num = int(request.args.get('page_num', 1))
@@ -100,8 +104,12 @@ def get_documents():
         'year': request.args.get('year', '%'),
         'region': request.args.get('region', '%'),
         'article': f'%{request.args.get("article", "")}%',
-        'judge': f'%{request.args.get("judge", "")}%'
+        'judge': f'%{request.args.get("judge", "")}%',
+        'fabula': f'%{request.args.get("fabula", "")}%'
     }
+
+    if params['fabula']:
+        selector += ', m.fabula fabula'
 
     cursor = db.cursor()
 
