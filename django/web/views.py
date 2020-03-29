@@ -23,18 +23,14 @@ def search(req: HttpRequest):
     article = req.GET.get('article', '')
     year = req.GET.get('year') or '%'
     page_num = req.GET.get('page_num', 1)
-    # fabula = req.GET.get('fabula') or 0
 
     params = {
         'region': selected_region,
         'judge': judge,
         'year': year,
         'article': article,
-        'page_num': page_num,
-        # 'fabula': fabula
+        'page_num': page_num
     }
-
-    print(params)
 
     data = requests.get(f'{front}/documents/', params=params).json()
     documents = data['documents']
