@@ -1,12 +1,18 @@
 <html>
 <head>
+<link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
+<script type="text/javascript" href="{% static 'js/sort.js' %}"></script>
 <title>Парсер решений судов</title>
 </head>
 <body>
 <h2>Поиск документов</h2>
 <form action="/" method="get">
     Судья: <input type="text" name="judge" value="{{judge}}" />
-    Год: <input type="number" name="year" value="{{year}}" min="2018"/>
+    Год: <select name="year">
+  <option disabled selected>Выберите год</option>
+  <option>2018</option>
+  <option>2019</option> 
+</select>
     Статья: <input type="text" name="article" value="{{article}}" />
     Регион: <select name="region">
             <option value=""></option>
@@ -18,7 +24,19 @@
         </select>
 <input type="submit" value="Искать" />
 </form>
+
 {% if documents %}
+    <p>
+        <script>
+            function toggle(show, className){
+            [].forEach.call(document.getElementsByClassName(className), (item) => {item.style.display = show?'table-cell':'none'});
+            };
+        </script>
+        <input type="checkbox" onclick="toggle(this.checked, 'fabula')"> Фабула
+        <input type="checkbox" onclick="toggle(this.checked, 'witness')"> Показания свидетелей
+        <input type="checkbox" onclick="toggle(this.checked, 'prove')"> Доказательства
+        <input type="checkbox" onclick="toggle(this.checked, 'meditation')"> Размышления судьи
+    </p>
     <div style="text-align: center; margin-bottom: 20px;">
         {% for num, url in pages %}
             <span style="margin: 3px;">
@@ -34,6 +52,10 @@
         <thead>
             <tr>
                 <th>Документ</th>
+                <th style="display: none;" class="fabula">Фабула</th>
+                <th style="display: none;" class="witness">Показания свидетелей</th>
+                <th style="display: none;" class="prove">Доказательства</th>
+                <th style="display: none;" class="meditation">Размышления судьи</th>
                 <th>Регион</th>
                 <th>Суд</th>
                 <th>Дело</th>
@@ -48,6 +70,10 @@
             {% for item in documents %}
                 <tr>
                     <td><a href="/doc{{ item.id }}">{{item.header}}</a></td>
+                    <td style="display: none;" class="fabula">{{item.fabula}}</td>
+                    <td style="display: none;" class="witness">{{item.witness}}</td>
+                    <td style="display: none;" class="prove">{{item.prove}}</td>
+                    <td style="display: none;" class="meditation">{{item.meditation}}</td>
                     <td>{{item.region}}</td>
                     <td>{{item.court}}</td>
                     <td>{{item.number}}</td>

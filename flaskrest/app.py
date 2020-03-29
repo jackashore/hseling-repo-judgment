@@ -69,12 +69,12 @@ def list_laws():
 @app.route('/regions/', methods=['GET'])
 def list_regions():
     cursor = db.cursor()
-    cursor.execute('select distinct(region) from metadata')
+    cursor.execute('select distinct(region) from metadata order by 1')
     regions = [item for item, in cursor]
-    cursor.close()
+    cursor.close() 
     return jsonify(regions)
-
-
+	
+	
 @app.route('/documents/', methods=['GET'])
 def get_documents():
     sql = '''select {selector}
@@ -88,7 +88,7 @@ def get_documents():
     '''
 
     selector = ''' d.id id, d.header header, d.url url, m.date date, m.number number, m.court court, m.region region,
-    m.judge judge, m.article article, m.accused accused
+    m.judge judge, m.article article, m.accused accused, m.fabula fabula, m.witness witness, m.prove prove, m.meditation meditation
     '''
 
     page_size = int(request.args.get('page_size', 20))
