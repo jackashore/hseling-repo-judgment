@@ -9,7 +9,7 @@
 import re
 from pathlib import Path
 from bs4 import BeautifulSoup
-from rusenttokenize import ru_sent_tokenize
+from nltk.tokenize.punkt import PunktSentenceTokenizer
 import pickle
 
 MODELS_DIR = Path(__file__).parent / 'models'
@@ -29,15 +29,16 @@ def divide_into_parts(text):
     return begin, main_part, end
 
 
-def split_sentences(html):
+def split_sentences(html, splitter_filename=MODELS_DIR/'segmenter.pk'):
     """делим на предложения основную часть приговора"""
     soup = BeautifulSoup(html, 'html.parser')
     for script in soup(["script", "style"]):
         script.decompose()
     text = soup.text
     begin, main_part, end = divide_into_parts(text)
-
-    return ru_sent_tokenize(main_part)
+    trainer_data = pickle.load(open(splitter_filename, 'rb'))
+    tokenizer = PunktSentenceTokenizer(trainer_data)
+    return tokenizer.tokenize(main_part)
 
 
 def predict_parts(text, clf_filename=MODELS_DIR/'finalized_parts_clf.sav'):
